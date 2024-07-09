@@ -1,0 +1,18 @@
+{% extends 'blog/base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-6">
+        <div class="card">
+            <h4 class="card-title">Профиль</h4>
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data" class="form-floating">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <button type="submit" class="btn btn-success">Сохранить</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
