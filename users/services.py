@@ -1,5 +1,6 @@
-import stripe
 import os
+
+import stripe
 from dotenv import load_dotenv
 
 load_dotenv()

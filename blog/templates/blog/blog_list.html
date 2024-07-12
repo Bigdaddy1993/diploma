@@ -1,22 +1,37 @@
 {% extends 'blog/base.html' %}
 {% block title %}
+{% load image_tag %}
 <div class="pricing-header px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
     <h1 class="display-4">Посты</h1>
 </div>
 {% endblock %}
 {% block content %}
-
 {% for object in object_list %}
 <div class="row text-center">
-    <div class="col-5">
-        <div class="card mb-4 box-shadow">
-            <div class="card-header"></div>
-            <div class="card-body">
+    <div class="col-12">
+    <div class="col-3">
+        <div class="card-body">
+                <img class="card-img-top"
+                     src="{% mymedia object.image %}"
+                     alt="Card image cap">
                 <p class="card-text">Тема поста: {{ object.title }} </p>
                 <p class="card-text">Текст поста: {{ object.body }} </p>
+                <p class="card-text">Владелец: {{ object.owner }} </p>
+                <p class="card-text">Платный контент: {{ object.is_payment }} </p>
+                {% if object.owner and user == object.owner or user.is_superuser %}
                 <a class="btn btn-outline-primary" href="{% url 'blog:blog_update' object.pk %}"> Редактировать пост</a>
-                <a class="btn btn-outline-primary" href="{% url 'blog:blog_detail' object.pk %}"> Подробнее</a>
-                <a class="btn btn-outline-danger" href="{% url 'blog:blog_delete' object.pk %}"> Удалить</a>
+                {% endif %}
+
+                    {% if not object.is_payment or user.payment or user == object.owner and user.is_authenticated or user.is_superuser %}
+                    <a class="btn btn-outline-primary" href="{% url 'blog:blog_detail' object.pk %}"> Подробнее</a>
+                    {% else %}
+                    <a class="p-2 btn btn-outline-primary" href="{% url 'users:create' %}"> Оформите подписку для платного контента</a>
+                    {% endif %}
+
+                {% if object.owner and user == object.owner or user.is_superuser %}
+                <a class="btn btn-outline-danger" href="{% url 'blog:blog_delete' object.pk %}">
+                    Удалить</a>
+                {% endif %}
             </div>
         </div>
     </div>

@@ -1,9 +1,9 @@
 from django.contrib.auth.views import LoginView, LogoutView
 from django.urls import path
 
-from users import views
 from users.apps import UsersConfig
-from users.views import RegisterView, ProfileView, PaymentListView
+from users.views import (PaymentCreate, PaymentListView, ProfileView,
+                         RegisterView)
 
 app_name = UsersConfig.name
 
@@ -14,6 +14,6 @@ urlpatterns = [
     path('profile/', ProfileView.as_view(), name='profile'),
 
 
-    path('payment/create/', views.perform_create, name='create'),
+    path('payment/create/', PaymentCreate.as_view(), name='create'),
     path('payment/list/', PaymentListView.as_view(), name='list'),
 ]

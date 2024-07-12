@@ -1,14 +1,14 @@
 from datetime import datetime
 
 from django.core.exceptions import PermissionDenied
-from django.http import HttpResponsePermanentRedirect
-from django.shortcuts import render
+from django.shortcuts import redirect
 from django.urls import reverse_lazy
-from django.views.generic import CreateView, UpdateView, ListView
+from django.views.generic import CreateView, ListView, UpdateView
 
-from users.forms import UserRegisterForm, UserProfileForm
-from users.models import User, Payment
-from users.services import create_stripe_product, create_stripe_price, create_stripe_session
+from users.forms import UserProfileForm, UserRegisterForm
+from users.models import Payment, User
+from users.services import (create_stripe_price, create_stripe_product,
+                            create_stripe_session)
 
 
 class RegisterView(CreateView):
@@ -24,17 +24,21 @@ class ProfileView(UpdateView):
     success_url = reverse_lazy('users:profile')
 
     def get_object(self, queryset=None):
+        """
+        Возвращает текущего пользователя
+        """
         return self.request.user
 
 
-# class PaymentCreateView(CreateView):
-#     model = Payment
-#     # queryset = Payment.objects.all()
-#     template_name = 'users/payment_form.html'
-#     fields = '__all__'
+class PaymentCreate(CreateView):
 
-def perform_create(request):
-    if request.method == 'GET':
+    def get(self, request, *args, **kwargs):
+        """
+        Создает продукт в страйпе, цену, сессию
+        и редиректит на сайт страйпа
+        если пользователь уже оплатил подписку то выбрасывает
+        исключение в виде ограничения прав доступа
+        """
         if request.user.payment:
             raise PermissionDenied
         else:
@@ -48,7 +52,7 @@ def perform_create(request):
             user.payment = payment
             user.save()
             payment.save()
-            return HttpResponsePermanentRedirect(payment.link)
+            return redirect(payment.link)
 
 
 class PaymentListView(ListView):
